@@ -1,13 +1,22 @@
-package com.cmb.netty.webSocket;
+package com.cmb.netty.webSocket.entity.message;
+
+import com.cmb.netty.webSocket.entity.property.ChannelGroupProperty;
 
 public class RequestMessage {
     private String entCode;
 
     private String type;
 
+    private String requestType;
+
+    private String dataType;
+
     private String channelName;
 
     private String params;
+
+    public RequestMessage() {
+    }
 
     public String getEntCode() {
         return entCode;
@@ -41,11 +50,39 @@ public class RequestMessage {
         this.params = params;
     }
 
+    public String getRequestType() {
+        return requestType;
+    }
+
+    public void setRequestType(String requestType) {
+        this.requestType = requestType;
+    }
+
+    public String getDataType() {
+        return dataType;
+    }
+
+    public void setDataType(String dataType) {
+        this.dataType = dataType;
+    }
+
+
+
     public ChannelGroupProperty buildChannelGroupProperty() {
         return ChannelGroupProperty.builder()
                 .entCode(entCode)
                 .type(type)
                 .build();
+    }
+
+    @Override
+    public String toString() {
+        return "RequestMessage{" +
+                "entCode='" + entCode + '\'' +
+                ", type='" + type + '\'' +
+                ", channelName='" + channelName + '\'' +
+                ", params='" + params + '\'' +
+                '}';
     }
 
     private RequestMessage(String entCode, String type, String channelName, String params) {

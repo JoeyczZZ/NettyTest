@@ -1,15 +1,15 @@
 package com.cmb.netty;
 
 import com.cmb.netty.utils.JsonUtils;
-import com.cmb.netty.webSocket.ResponseMessage;
-import com.cmb.netty.webSocket.enu.ResponseTypeEnum;
+import com.cmb.netty.webSocket.entity.message.ResponseMessage;
+import com.cmb.netty.webSocket.enu.MessageTypeEnum;
 import org.junit.jupiter.api.Test;
 
 public class JsonUtilsTest {
     @Test
     public void toJson() {
         ResponseMessage responseMessage = ResponseMessage.builder()
-                .responseType(ResponseTypeEnum.HEART_BEAR.getCode())
+                .responseType(MessageTypeEnum.HEART_BEAR.getCode())
                 .build();
 
         try {
@@ -18,5 +18,19 @@ public class JsonUtilsTest {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Test
+    public void aa() {
+
+        System.out.println("GET "+"GET".hashCode());
+        System.out.println("POST "+"POST".hashCode());
+        System.out.println("PUT "+"PUT".hashCode());
+        System.out.println("HEAD "+"HEAD".hashCode());
+        System.out.println("OPTIONS "+"OPTIONS".hashCode());
+        System.out.println("PATCH "+"PATCH".hashCode());
+        System.out.println("DELETE "+"DELETE".hashCode());
+        System.out.println("TRACE "+"TRACE".hashCode());
+        System.out.println("CONNECT "+"CONNECT".hashCode());
     }
 }

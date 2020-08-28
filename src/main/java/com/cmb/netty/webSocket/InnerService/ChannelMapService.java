@@ -1,8 +1,8 @@
 package com.cmb.netty.webSocket.InnerService;
 
 import com.cmb.netty.utils.JsonUtils;
-import com.cmb.netty.webSocket.ChannelProperty;
-import com.cmb.netty.webSocket.RequestMessage;
+import com.cmb.netty.webSocket.entity.property.ChannelProperty;
+import com.cmb.netty.webSocket.entity.message.RequestMessage;
 import com.cmb.netty.webSocket.WebSocketServerNetty;
 import com.cmb.netty.webSocket.dispatch.NettyBusinessLogic;
 import com.cmb.netty.webSocket.dispatch.NettyBusinessLogicService;

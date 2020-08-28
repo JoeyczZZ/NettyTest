@@ -1,12 +1,11 @@
 package com.cmb.netty.webSocket;
 
+import com.cmb.netty.webSocket.entity.property.ChannelProperty;
+import com.cmb.netty.webSocket.entity.property.SpecialGroupProperty;
+import com.cmb.netty.webSocket.entity.wrap.ChannelGroupMapWrap;
 import com.cmb.netty.webSocket.initializer.WebSocketServerInitializer;
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelFutureListener;
-import io.netty.channel.EventLoopGroup;
-import io.netty.channel.group.ChannelGroup;
+import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
@@ -27,15 +26,16 @@ import java.net.InetSocketAddress;
 import java.security.cert.CertificateException;
 import java.util.concurrent.ConcurrentHashMap;
 
-@Component
+//@Component
 public class WebSocketServerNetty implements ApplicationRunner, ApplicationListener<ContextClosedEvent> {
     private static final int PORT = 8199;
     private static final Logger log = LoggerFactory.getLogger(WebSocketServerNetty.class.getName());
 
     public static final boolean SSL = System.getProperty("ssl") != null;
 
-    public static final ConcurrentHashMap<ChannelGroupProperty, ChannelGroup> channelGroupMap = new ConcurrentHashMap<>();
+    public static final ChannelGroupMapWrap channelGroupMap = new ChannelGroupMapWrap();
     public static final ConcurrentHashMap<String, ChannelProperty> channelNameAndChannelMap = new ConcurrentHashMap<>();
+    public static final ConcurrentHashMap<ChannelId, ConcurrentHashMap<SpecialGroupProperty, Channel>> specialChannelGroup = new ConcurrentHashMap<>();
 
     private final EventLoopGroup bossGroup = new NioEventLoopGroup(1);
     private final EventLoopGroup workerGroup = new NioEventLoopGroup();
@@ -69,7 +69,7 @@ public class WebSocketServerNetty implements ApplicationRunner, ApplicationListe
         b.group(bossGroup, workerGroup)
                 .channel(NioServerSocketChannel.class)
                 .handler(new LoggingHandler(LogLevel.INFO))
-                .childHandler(new WebSocketServerInitializer(sslCtx, channelGroupMap, channelNameAndChannelMap));
+                .childHandler(new WebSocketServerInitializer(sslCtx, channelGroupMap, channelNameAndChannelMap, specialChannelGroup));
 
         ChannelFuture future = b.bind(new InetSocketAddress(PORT));
         future.addListener((ChannelFutureListener) channelFuture -> {
@@ -91,7 +91,7 @@ public class WebSocketServerNetty implements ApplicationRunner, ApplicationListe
             channel.close();
         }
 
-        channelGroupMap.forEach((key, value) -> value.close());
+        channelGroupMap.map.forEach((key, value) -> value.close());
 
         bossGroup.shutdownGracefully();
         workerGroup.shutdownGracefully();

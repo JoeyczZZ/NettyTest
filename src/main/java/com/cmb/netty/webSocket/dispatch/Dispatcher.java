@@ -1,7 +1,7 @@
 package com.cmb.netty.webSocket.dispatch;
 
 import com.cmb.netty.utils.JsonUtils;
-import com.cmb.netty.webSocket.RequestMessage;
+import com.cmb.netty.webSocket.entity.message.RequestMessage;
 import io.netty.channel.ChannelHandlerContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +23,7 @@ public class Dispatcher {
 
     private static final Map<String, Object> routeTable = new ConcurrentHashMap<>();
 
-    public void dispatch(ChannelHandlerContext ctx, String message){
+    public void dispatch(ChannelHandlerContext ctx, String message) {
         RequestMessage requestMessage = null;
         try {
             requestMessage = JsonUtils.fromJson(message, RequestMessage.class);

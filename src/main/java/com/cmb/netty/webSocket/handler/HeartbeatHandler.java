@@ -1,9 +1,10 @@
 package com.cmb.netty.webSocket.handler;
 
 import com.cmb.netty.utils.JsonUtils;
-import com.cmb.netty.webSocket.ResponseMessage;
-import com.cmb.netty.webSocket.enu.ResponseTypeEnum;
+import com.cmb.netty.webSocket.entity.message.ResponseMessage;
+import com.cmb.netty.webSocket.enu.MessageTypeEnum;
 import io.netty.channel.ChannelFutureListener;
+import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
@@ -11,6 +12,7 @@ import io.netty.handler.timeout.IdleStateEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Sharable
 public class HeartbeatHandler extends SimpleChannelInboundHandler<TextWebSocketFrame> {
     private static final Logger log = LoggerFactory.getLogger(HeartbeatHandler.class.getName());
 
@@ -18,7 +20,7 @@ public class HeartbeatHandler extends SimpleChannelInboundHandler<TextWebSocketF
 
     static {
         ResponseMessage responseMessage = ResponseMessage.builder()
-                .responseType(ResponseTypeEnum.HEART_BEAR.getCode())
+                .responseType(MessageTypeEnum.HEART_BEAR.getCode())
                 .build();
         try {
             RESPONSE_JSON = JsonUtils.toJson(responseMessage);
@@ -44,11 +46,6 @@ public class HeartbeatHandler extends SimpleChannelInboundHandler<TextWebSocketF
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, TextWebSocketFrame msg) throws Exception {
         ctx.fireChannelRead(msg.retain());
-    }
-
-    @Override
-    public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
-        super.channelRegistered(ctx);
     }
 
     @Override

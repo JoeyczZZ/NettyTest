@@ -1,4 +1,6 @@
-package com.cmb.netty.webSocket;
+package com.cmb.netty.webSocket.entity.property;
+
+import com.cmb.netty.utils.StringUtils;
 
 import java.util.Objects;
 
@@ -40,6 +42,28 @@ public class ChannelGroupProperty {
     @Override
     public int hashCode() {
         return Objects.hash(entCode, type);
+    }
+
+    @Override
+    public String toString() {
+        return "ChannelGroupProperty{" +
+                "entCode='" + entCode + '\'' +
+                ", type='" + type + '\'' +
+                '}';
+    }
+
+    public String toString2() {
+        StringBuilder stringBuilder = new StringBuilder("ChannelGroupProperty{");
+
+        if (StringUtils.isNotBlank(entCode)) {
+            stringBuilder.append(" entCode='").append(entCode).append('\'');
+        }
+        if (StringUtils.isNotBlank(type)) {
+            stringBuilder.append(" type='").append(type).append('\'');
+        }
+        stringBuilder.append('}');
+
+        return stringBuilder.toString();
     }
 
     public static Builder builder() {

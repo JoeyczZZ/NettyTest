@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package message;
+option java_package = "com.cmb.netty.gateWay.dto";
+option java_outer_classname = "NettyMessageProto";
+
+message NettyMessage {
+  Header header = 1;
+  string body = 2;
+}
+
+message Header {
+  int32 crcCode = 1;
+  int32 length = 2;
+  int64 sessionID = 3;
+  bytes type = 4;
+  bytes priority = 5;
+  map<string, string> attachment = 6;
+}

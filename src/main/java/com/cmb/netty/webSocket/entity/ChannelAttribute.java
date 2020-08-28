@@ -1,4 +1,4 @@
-package com.cmb.netty.webSocket;
+package com.cmb.netty.webSocket.entity;
 
 public class ChannelAttribute {
     private String channelName;

@@ -1,6 +1,6 @@
 package com.cmb.netty.webSocket.handler;
 
-import com.cmb.netty.webSocket.ChannelAttribute;
+import com.cmb.netty.webSocket.entity.ChannelAttribute;
 import com.cmb.netty.webSocket.enu.RequestMessageEnum;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
