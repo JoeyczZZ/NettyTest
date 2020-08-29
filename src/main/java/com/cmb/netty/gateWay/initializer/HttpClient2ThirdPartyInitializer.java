@@ -13,11 +13,13 @@ import io.netty.handler.ssl.SslContext;
 
 public class HttpClient2ThirdPartyInitializer extends ChannelInitializer<SocketChannel> {
     private final SslContext sslCtx;
+    private final String from;
 
     private final Channel toServerChannel;
 
-    public HttpClient2ThirdPartyInitializer(SslContext sslCtx, Channel toServerChannel) {
+    public HttpClient2ThirdPartyInitializer(SslContext sslCtx, String from, Channel toServerChannel) {
         this.sslCtx = sslCtx;
+        this.from = from;
         this.toServerChannel = toServerChannel;
     }
 
@@ -32,6 +34,6 @@ public class HttpClient2ThirdPartyInitializer extends ChannelInitializer<SocketC
         pipeline.addLast(new LoggingHandler(LogLevel.DEBUG));
         pipeline.addLast(new HttpClientCodec());
         pipeline.addLast(new HttpObjectAggregator(65536));
-        pipeline.addLast(new HttpResponseShowHandler(toServerChannel));
+        pipeline.addLast(new HttpResponseShowHandler(toServerChannel, from));
     }
 }

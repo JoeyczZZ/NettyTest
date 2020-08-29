@@ -10,6 +10,7 @@ import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.group.ChannelGroup;
+import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
@@ -17,6 +18,7 @@ import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.SelfSignedCertificate;
+import io.netty.util.concurrent.ImmediateEventExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -37,7 +39,8 @@ public class GatewayServer {
     private final EventLoopGroup bossGroup = new NioEventLoopGroup(1);
     private final EventLoopGroup workerGroup = new NioEventLoopGroup();
 
-    private static final Cache<String, ChannelGroup> GS_CHANNEL_GROUP_CACHE = Caffeine.newBuilder().build();
+    private static final Cache<String, ChannelGroup> GS_REGISTER_CHANNEL_GROUP_CACHE = Caffeine.newBuilder().build();
+    private static final ChannelGroup innerChannel = new DefaultChannelGroup(ImmediateEventExecutor.INSTANCE);
 
     @PostConstruct
     public void start() throws CertificateException, SSLException {
@@ -55,7 +58,7 @@ public class GatewayServer {
                 .channel(NioServerSocketChannel.class)
                 .option(ChannelOption.SO_BACKLOG, 100)
                 .handler(new LoggingHandler(LogLevel.DEBUG))
-                .childHandler(new GateWayServerInitializer(sslCtx, GS_CHANNEL_GROUP_CACHE));
+                .childHandler(new GateWayServerInitializer(sslCtx, GS_REGISTER_CHANNEL_GROUP_CACHE, innerChannel));
 
         ChannelFuture future = b.bind(new InetSocketAddress(PORT));
         future.addListener((ChannelFutureListener) channelFuture -> {

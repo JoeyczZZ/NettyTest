@@ -2,6 +2,7 @@ package com.cmb.netty.gateWay.handler;
 
 import com.cmb.netty.gateWay.enu.MessageTypeEnum;
 import com.cmb.netty.gateWay.dto.NettyMessageProto;
+import com.cmb.netty.gateWay.utils.NettyMessageUtils;
 import com.google.protobuf.ByteString;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
@@ -29,8 +30,9 @@ public class HeartBeatReqHandler extends SimpleChannelInboundHandler<NettyMessag
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, NettyMessageProto.NettyMessage msg) throws Exception {
-        if (null != msg.getHeader() && msg.getHeader().getType().toByteArray()[0] == MessageTypeEnum.HEARTBEAT_RESP.getValue()) {
+        if (NettyMessageUtils.typeVerify(msg.getHeader(), MessageTypeEnum.HEARTBEAT_RESP)) {
             log.info("Receive HeartBeat: " + msg);
         }
+        ctx.fireChannelRead(msg);
     }
 }

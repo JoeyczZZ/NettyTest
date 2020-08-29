@@ -1,7 +1,8 @@
 package com.cmb.netty.gateWay.enu;
 
 public enum AttachmentEnum {
-    HTTP_CLIENT_2_INNER_SERVER("from", "httpClient2InnerServer"),
+    FROM("from", ""),
+    HTTP_CLIENT_2_INNER_SERVER_FROM("from", "httpClient2InnerServer"),
 
     CONNECT("connect", "");
 

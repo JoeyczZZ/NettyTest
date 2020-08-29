@@ -59,7 +59,7 @@ public class HttpClient2InnerServer {
         bootstrap.group(group)
                 .channel(NioSocketChannel.class)
                 .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 3000)
-                .handler(new HttpClient2InnerServerInitializer(sslCtx));
+                .handler(new HttpClient2InnerServerInitializer(sslCtx, THIRD_PART_MAP));
         ChannelFuture future = bootstrap.connect(new InetSocketAddress(server1Host, server1Port));
         future.addListener((ChannelFutureListener) channelFuture -> {
             if (channelFuture.isSuccess()) {
@@ -87,7 +87,7 @@ public class HttpClient2InnerServer {
                 port = 443;
             }
         }
-        bootstrap.handler(new HttpClient2ThirdPartyInitializer(sslCtx, toServerChannel));
+        bootstrap.handler(new HttpClient2ThirdPartyInitializer(sslCtx, httpClientURLEnum.getName(), toServerChannel));
         ChannelFuture future = bootstrap.connect(new InetSocketAddress(host, port));
         log.info("Create connect: " + httpClientURLEnum.getName() + " " + httpClientURLEnum.getUrl());
 
@@ -98,6 +98,10 @@ public class HttpClient2InnerServer {
         } else {
             log.warn("THIRD_PART_MAP " + httpClientURLEnum.getName() + " ChannelGroup is null");
         }
+    }
+
+    public static Channel channel() {
+        return toServerChannel;
     }
 
     @PreDestroy

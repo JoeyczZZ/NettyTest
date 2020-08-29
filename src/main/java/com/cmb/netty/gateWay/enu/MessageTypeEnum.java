@@ -10,7 +10,8 @@ public enum MessageTypeEnum {
     HEARTBEAT_RESP((byte) 6, "心跳应答消息", "6"),
     EXCEPTION((byte) 7, "异常消息", "7"),
     SUCCESS((byte) 8, "成功消息", "8"),
-    REGISTER((byte) 9, "注册", "9");
+    FAIL((byte) 9, "失败消息", "9"),
+    REGISTER((byte) 10, "注册", "10");
 
 
     private final byte value;

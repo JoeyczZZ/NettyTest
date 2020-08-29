@@ -1,9 +1,8 @@
 package com.cmb.netty.gateWay.handler;
 
-import com.cmb.netty.gateWay.enu.MessageTypeEnum;
 import com.cmb.netty.gateWay.dto.NettyMessageProto;
+import com.cmb.netty.gateWay.enu.MessageTypeEnum;
 import com.cmb.netty.gateWay.utils.NettyMessageUtils;
-import com.cmb.netty.gateWay.utils.NettyUtils;
 import com.google.protobuf.ByteString;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;

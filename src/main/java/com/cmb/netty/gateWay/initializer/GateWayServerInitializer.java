@@ -16,10 +16,12 @@ import io.netty.handler.ssl.SslContext;
 public class GateWayServerInitializer extends ChannelInitializer<SocketChannel> {
     private final SslContext sslCtx;
     private final Cache<String, ChannelGroup> gsChannelGroupCache;
+    private final ChannelGroup innerChannel;
 
-    public GateWayServerInitializer(SslContext sslCtx, Cache<String, ChannelGroup> gsChannelGroupCache) {
+    public GateWayServerInitializer(SslContext sslCtx, Cache<String, ChannelGroup> gsChannelGroupCache, ChannelGroup innerChannel) {
         this.sslCtx = sslCtx;
         this.gsChannelGroupCache = gsChannelGroupCache;
+        this.innerChannel = innerChannel;
     }
 
     @Override
@@ -34,10 +36,11 @@ public class GateWayServerInitializer extends ChannelInitializer<SocketChannel> 
         
         pipeline.addLast(new ProtobufVarint32LengthFieldPrepender());
         pipeline.addLast(new ProtobufEncoder());
+
         pipeline.addLast(new LoginAuthRespHandler());
         pipeline.addLast(new HeartBeatRespHandler());
-        pipeline.addLast(new HttpClient2InnerServerMessageHandler(gsChannelGroupCache));
-        pipeline.addLast(new RegisterHandler(gsChannelGroupCache));
-        pipeline.addLast(new ProtocolConversionInHandler());
+        pipeline.addLast(new FromTypeHandler(gsChannelGroupCache));
+        pipeline.addLast(new RegisterHandler(gsChannelGroupCache, innerChannel));
+        pipeline.addLast(new GatewayDispatcherHandler(innerChannel));
     }
 }
