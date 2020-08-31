@@ -25,7 +25,7 @@ import javax.annotation.PreDestroy;
 import java.net.InetSocketAddress;
 import java.net.URI;
 
-@Component
+//@Component
 public class HttpClient2InnerServer {
     private static final Logger log = LoggerFactory.getLogger(HttpClient2InnerServer.class.getName());
 

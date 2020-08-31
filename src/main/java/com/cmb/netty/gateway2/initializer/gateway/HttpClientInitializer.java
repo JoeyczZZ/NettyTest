@@ -1,6 +1,5 @@
-package com.cmb.netty.gateWay.initializer;
+package com.cmb.netty.gateway2.initializer.gateway;
 
-import com.cmb.netty.gateWay.handler.TestHandler;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
@@ -23,16 +22,11 @@ public class HttpClientInitializer extends ChannelInitializer<SocketChannel> {
     private final List<Channel> childChannel;
     private final List<HttpRequest> httpRequests;
 
-    private final InetSocketAddress inetSocketAddress;
-    private final Bootstrap bootstrap;
-
-    public HttpClientInitializer(SslContext sslCtx, ChannelHandlerContext clientCtx, List<Channel> childChannel, List<HttpRequest> httpRequests, InetSocketAddress inetSocketAddress, Bootstrap bootstrap) {
+    public HttpClientInitializer(SslContext sslCtx, ChannelHandlerContext clientCtx, List<Channel> childChannel, List<HttpRequest> httpRequests) {
         this.sslCtx = sslCtx;
         this.clientCtx = clientCtx;
         this.childChannel = childChannel;
         this.httpRequests = httpRequests;
-        this.inetSocketAddress = inetSocketAddress;
-        this.bootstrap = bootstrap;
     }
 
     @Override
@@ -46,6 +40,6 @@ public class HttpClientInitializer extends ChannelInitializer<SocketChannel> {
         pipeline.addLast(new LoggingHandler(LogLevel.DEBUG));
         pipeline.addLast(new HttpClientCodec());
         pipeline.addLast(new HttpObjectAggregator(65536));
-        pipeline.addLast(new TestHandler(clientCtx, childChannel, httpRequests, inetSocketAddress, bootstrap));
+        pipeline.addLast(new TestHandler(clientCtx, childChannel, httpRequests));
     }
 }

@@ -1,6 +1,8 @@
 package com.cmb.netty.gateWay;
 
 import com.cmb.netty.gateWay.initializer.SomeOneClientInitializer;
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -11,24 +13,28 @@ import io.netty.handler.ssl.util.SelfSignedCertificate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import java.net.InetSocketAddress;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.ArrayList;
+import java.util.List;
 
-@Component
+//@Component
 public class SomeOneClient {
     private static final Logger log = LoggerFactory.getLogger(SomeOneClient.class.getName());
-    private final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
 
-    private final EventLoopGroup group = new NioEventLoopGroup();
+    private static final EventLoopGroup group = new NioEventLoopGroup();
 
     public static final boolean SSL = System.getProperty("ssl") != null;
 
-    public static Channel channel;
+    public static Cache<String, Channel> CHANNEL_MAP = Caffeine.newBuilder()
+            .build();
+
+    private static final Bootstrap bootstrap = new Bootstrap()
+            .group(group)
+            .channel(NioSocketChannel.class)
+            .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 3000);
 
     @Value("${netty.client.1.host}")
     private String host;
@@ -42,6 +48,11 @@ public class SomeOneClient {
     }
 
     public void connect(String host, int port) throws Exception {
+        connect(host, port, "default" ,new ArrayList<>());
+    }
+
+
+    public void connect(String host, int port, String name, List<ChannelHandler> channelHandlers) throws Exception {
         // Configure SSL.
         final SslContext sslCtx;
         if (SSL) {
@@ -51,36 +62,32 @@ public class SomeOneClient {
             sslCtx = null;
         }
 
-//        try {
-            Bootstrap bootstrap = new Bootstrap();
-            ChannelFuture future = bootstrap.group(group)
-                    .channel(NioSocketChannel.class)
-                    .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 3000)
-                    .handler(new SomeOneClientInitializer(sslCtx))
-                    .connect(new InetSocketAddress(host, port))
-                    .sync();
-            future.addListener((ChannelFutureListener) channelFuture -> {
-                if (channelFuture.isSuccess()) {
-                    log.info("SomeOneClient 绑定端口" + port + "成功!");
-                } else {
-                    log.error("SomeOneClient 尝试绑定端口" + port + "失败!", channelFuture.cause());
-                }
-            });
-           channel = future.channel();
-//        }
-//        finally {
-//            executorService.execute(() -> {
-//                try {
-//                    TimeUnit.SECONDS.sleep(5);
-//                    try {
-//                        connect("127.0.0.1", 8198);
-//                    } catch (Exception e) {
-//                        e.printStackTrace();
-//                    }
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
-//            });
-//        }
+        ChannelFuture future = bootstrap.handler(new SomeOneClientInitializer(sslCtx, channelHandlers))
+                .connect(new InetSocketAddress(host, port))
+                .sync();
+        future.addListener((ChannelFutureListener) channelFuture -> {
+            if (channelFuture.isSuccess()) {
+                log.info("SomeOneClient 绑定端口" + port + "成功!");
+            } else {
+                log.error("SomeOneClient 尝试绑定端口" + port + "失败!", channelFuture.cause());
+            }
+        });
+
+        CHANNEL_MAP.put(name, future.channel());
+    }
+
+
+
+    @PreDestroy
+    public void destroy() {
+        do {
+            CHANNEL_MAP.asMap().forEach((k, v) -> {
+            v.close();
+            CHANNEL_MAP.invalidate(k);
+        });
+        } while (CHANNEL_MAP.asMap().size() > 0);
+
+
+        group.shutdownGracefully();
     }
 }

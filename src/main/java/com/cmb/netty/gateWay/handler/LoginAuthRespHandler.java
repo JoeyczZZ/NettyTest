@@ -26,7 +26,7 @@ public class LoginAuthRespHandler extends SimpleChannelInboundHandler<NettyMessa
 
             NettyMessageProto.NettyMessage loginResp = null;
             if (nodeCheck.containsKey(nodeIndex)) {
-                loginResp = NettyMessageUtils.buildBusinessResponseMessage("-1");
+                loginResp = NettyMessageUtils.buildLoginResp("-1");
             } else {
                 InetSocketAddress address = (InetSocketAddress) ctx.channel().remoteAddress();
                 String ip = address.getAddress().getHostAddress();
@@ -37,7 +37,7 @@ public class LoginAuthRespHandler extends SimpleChannelInboundHandler<NettyMessa
                         break;
                     }
                 }
-                loginResp = isOk ? NettyMessageUtils.buildBusinessResponseMessage("0") : NettyMessageUtils.buildBusinessResponseMessage("-1");
+                loginResp = isOk ? NettyMessageUtils.buildLoginResp("0") : NettyMessageUtils.buildLoginResp("-1");
                 if (isOk) {
                     nodeCheck.put(nodeIndex, true);
                 }

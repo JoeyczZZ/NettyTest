@@ -20,11 +20,12 @@ public class FromTypeHandler extends SimpleChannelInboundHandler<NettyMessagePro
     protected void channelRead0(ChannelHandlerContext ctx, NettyMessageProto.NettyMessage msg) throws Exception {
         NettyMessageProto.Header header = msg.getHeader();
         if (NettyMessageUtils.attachmentMapKeyPresentVerify(header, AttachmentEnum.FROM.key())) {
+
             String from = header.getAttachmentMap().get(AttachmentEnum.FROM.key());
             if (StringUtils.isNotBlank(from)) {
                 ChannelGroup channels = gsChannelGroupCache.getIfPresent(from);
                 if (null != channels) {
-                    channels.writeAndFlush(NettyMessageUtils.buildBusinessResponseMessage(msg));
+                    channels.writeAndFlush(msg);
                 }
             }
         } else {

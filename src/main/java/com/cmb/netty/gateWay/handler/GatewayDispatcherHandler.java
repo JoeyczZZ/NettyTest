@@ -1,6 +1,5 @@
 package com.cmb.netty.gateWay.handler;
 
-import com.cmb.netty.gateWay.HttpClient2InnerServer;
 import com.cmb.netty.gateWay.dto.NettyMessageProto;
 import com.cmb.netty.gateWay.utils.NettyMessageUtils;
 import io.netty.channel.ChannelHandlerContext;

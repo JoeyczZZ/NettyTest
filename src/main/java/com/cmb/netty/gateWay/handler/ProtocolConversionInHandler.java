@@ -5,6 +5,7 @@ import com.cmb.netty.gateWay.enu.ProtocolConversionEnum;
 import com.cmb.netty.gateWay.dto.NettyMessageProto;
 import com.cmb.netty.gateWay.utils.NettyMessageUtils;
 import com.cmb.netty.gateWay.utils.NettyUtils;
+import com.cmb.netty.gateway2.initializer.gateway.HttpClientHandler;
 import com.cmb.netty.utils.StringUtils;
 import com.google.protobuf.ByteString;
 import io.netty.channel.ChannelHandlerContext;
@@ -42,7 +43,7 @@ public class ProtocolConversionInHandler extends SimpleChannelInboundHandler<Net
                 return;
             }
         }
-        ctx.pipeline().addLast(new HttpClientHandler(urlValue));
+//        ctx.pipeline().addLast(new HttpClientHandler(urlValue));
 
         NettyMessageProto.Header header = NettyMessageProto.Header.newBuilder()
                 .setType(ByteString.copyFrom(new byte[]{MessageTypeEnum.SUCCESS.getValue()}))

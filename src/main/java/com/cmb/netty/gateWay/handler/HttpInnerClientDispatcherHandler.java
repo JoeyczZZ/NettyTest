@@ -28,7 +28,7 @@ public class HttpInnerClientDispatcherHandler extends SimpleChannelInboundHandle
             if (StringUtils.isNotBlank(msg.getBody())) {
                 ProtocolHttpBody body = JsonUtils.fromJson(msg.getBody(), ProtocolHttpBody.class);
 
-                log.warn("5 --- receive a protocol HTTP request to " + body.getTo() + "   HttpClientInnner");
+                log.warn("5 --- receive a protocol HTTP request to " + body.getTo() + "   HttpClientInner");
 
                 ChannelGroup channels = thirdPartMap.getIfPresent(body.getTo());
 

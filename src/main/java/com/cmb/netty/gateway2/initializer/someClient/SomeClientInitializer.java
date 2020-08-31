@@ -1,27 +1,26 @@
-package com.cmb.netty.gateWay.initializer;
+package com.cmb.netty.gateway2.initializer.someClient;
 
 import com.cmb.netty.gateWay.dto.NettyMessageProto;
-import com.cmb.netty.gateWay.handler.*;
-import com.github.benmanes.caffeine.cache.Cache;
+import com.cmb.netty.gateWay.handler.ExceptionCatchHandler;
+import com.cmb.netty.gateWay.handler.HeartBeatReqHandler;
+import com.cmb.netty.gateWay.handler.LoginAuthReqHandler;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
-import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.protobuf.ProtobufDecoder;
 import io.netty.handler.codec.protobuf.ProtobufEncoder;
 import io.netty.handler.codec.protobuf.ProtobufVarint32FrameDecoder;
 import io.netty.handler.codec.protobuf.ProtobufVarint32LengthFieldPrepender;
 import io.netty.handler.ssl.SslContext;
+import io.netty.handler.timeout.IdleStateHandler;
 
-public class GateWayServerInitializer extends ChannelInitializer<SocketChannel> {
+import java.util.concurrent.TimeUnit;
+
+public class SomeClientInitializer extends ChannelInitializer<SocketChannel> {
     private final SslContext sslCtx;
-    private final Cache<String, ChannelGroup> gsChannelGroupCache;
-    private final ChannelGroup innerChannel;
 
-    public GateWayServerInitializer(SslContext sslCtx, Cache<String, ChannelGroup> gsChannelGroupCache, ChannelGroup innerChannel) {
+    public SomeClientInitializer(SslContext sslCtx) {
         this.sslCtx = sslCtx;
-        this.gsChannelGroupCache = gsChannelGroupCache;
-        this.innerChannel = innerChannel;
     }
 
     @Override
@@ -33,15 +32,13 @@ public class GateWayServerInitializer extends ChannelInitializer<SocketChannel> 
 
         pipeline.addLast(new ProtobufVarint32FrameDecoder());
         pipeline.addLast(new ProtobufDecoder(NettyMessageProto.NettyMessage.getDefaultInstance()));
-        
+
         pipeline.addLast(new ProtobufVarint32LengthFieldPrepender());
         pipeline.addLast(new ProtobufEncoder());
-
-        pipeline.addLast(new LoginAuthRespHandler());
-        pipeline.addLast(new HeartBeatRespHandler());
-        pipeline.addLast(new FromTypeHandler(gsChannelGroupCache));
-        pipeline.addLast(new RegisterHandler(gsChannelGroupCache, innerChannel));
-        pipeline.addLast(new GatewayDispatcherHandler(innerChannel));
+        pipeline.addLast(new IdleStateHandler(0, 0, 60, TimeUnit.SECONDS));
+        pipeline.addLast(new HeartBeatReqHandler());
+        pipeline.addLast(new LoginAuthReqHandler());
+        pipeline.addLast(new HttpResponseHandler());
         pipeline.addLast(new ExceptionCatchHandler());
     }
 }

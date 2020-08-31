@@ -2,6 +2,7 @@ package com.cmb.netty.gateWay.handler;
 
 import com.cmb.netty.gateWay.dto.NettyMessageProto;
 import com.cmb.netty.gateWay.enu.MessageTypeEnum;
+import com.cmb.netty.gateWay.enu.ProtocolConversionEnum;
 import com.cmb.netty.gateWay.utils.NettyMessageUtils;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -19,7 +20,6 @@ public class LoginAuthReqHandler extends SimpleChannelInboundHandler<NettyMessag
 
     @Override
     public void channelRead0(ChannelHandlerContext ctx, NettyMessageProto.NettyMessage msg) throws Exception {
-
         if (NettyMessageUtils.typeVerify(msg.getHeader(), MessageTypeEnum.LOGIN_RESP)) {
             String loginResult = msg.getBody();
             if (!"0".equals(loginResult)) {

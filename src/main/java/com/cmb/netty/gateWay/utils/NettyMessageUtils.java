@@ -1,8 +1,13 @@
 package com.cmb.netty.gateWay.utils;
 
+import com.cmb.netty.gateWay.entity.body.ProtocolHttpBody;
 import com.cmb.netty.gateWay.enu.AttachmentEnum;
 import com.cmb.netty.gateWay.enu.MessageTypeEnum;
 import com.cmb.netty.gateWay.dto.NettyMessageProto;
+import com.cmb.netty.gateWay.enu.ProtocolConversionEnum;
+import com.cmb.netty.gateway2.entity.URICompose;
+import com.cmb.netty.utils.JsonUtils;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.protobuf.ByteString;
 
 public class NettyMessageUtils {
@@ -60,6 +65,17 @@ public class NettyMessageUtils {
                 .build();
     }
 
+    public static NettyMessageProto.NettyMessage buildLoginResp(String body) {
+        NettyMessageProto.Header header = NettyMessageProto.Header.newBuilder()
+                .setType(ByteString.copyFrom(new byte[]{MessageTypeEnum.LOGIN_RESP.getValue()}))
+                .build();
+
+        return NettyMessageProto.NettyMessage.newBuilder()
+                .setHeader(header)
+                .setBody(body)
+                .build();
+    }
+
     public static NettyMessageProto.NettyMessage buildRegister(String body) {
         NettyMessageProto.Header header = NettyMessageProto.Header.newBuilder()
                 .setType(ByteString.copyFrom(new byte[]{MessageTypeEnum.REGISTER.getValue()}))
@@ -68,6 +84,33 @@ public class NettyMessageUtils {
         return NettyMessageProto.NettyMessage.newBuilder()
                 .setHeader(header)
                 .setBody(body)
+                .build();
+    }
+
+    public static NettyMessageProto.NettyMessage buildHttpConnect(final URICompose uriCompose) throws JsonProcessingException {
+        NettyMessageProto.Header header = NettyMessageProto.Header.newBuilder()
+                .putAttachment(ProtocolConversionEnum.PROTOCOL.code(), ProtocolConversionEnum.HTTP_CONNECT.code())
+                .build();
+
+        return NettyMessageProto.NettyMessage.newBuilder()
+                .setHeader(header)
+                .setBody(JsonUtils.toJson(uriCompose))
+                .build();
+    }
+
+    public static NettyMessageProto.NettyMessage buildHttpRequest(final String method, final String path) throws JsonProcessingException {
+        NettyMessageProto.Header header = NettyMessageProto.Header.newBuilder()
+                .putAttachment(ProtocolConversionEnum.PROTOCOL.code(), ProtocolConversionEnum.HTTP.code())
+                .build();
+
+        ProtocolHttpBody body = ProtocolHttpBody.builder()
+                .method(method)
+                .path(path)
+                .build();
+
+        return NettyMessageProto.NettyMessage.newBuilder()
+                .setHeader(header)
+                .setBody(JsonUtils.toJson(body))
                 .build();
     }
 }

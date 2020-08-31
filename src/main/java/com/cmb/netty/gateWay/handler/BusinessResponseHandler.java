@@ -1,10 +1,8 @@
 package com.cmb.netty.gateWay.handler;
 
 import com.cmb.netty.gateWay.dto.NettyMessageProto;
-import com.cmb.netty.gateWay.entity.body.ProtocolHttpBody;
 import com.cmb.netty.gateWay.enu.MessageTypeEnum;
 import com.cmb.netty.gateWay.utils.NettyMessageUtils;
-import com.cmb.netty.utils.JsonUtils;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import org.slf4j.Logger;
@@ -18,6 +16,10 @@ public class BusinessResponseHandler extends SimpleChannelInboundHandler<NettyMe
         if (NettyMessageUtils.typeVerify(msg.getHeader(), MessageTypeEnum.BUSINESS_RESP)) {
             log.warn("BusinessResponseHandler accept: " + msg.toString());
         }
+
+        if (NettyMessageUtils.attachmentMapKeyPresentVerify(msg.getHeader(), "from")) {
+            log.warn("from: " + msg.getHeader().getAttachmentMap().get("from") + " " + msg.getBody());
+        }
     }
 
     @Override
@@ -25,20 +27,6 @@ public class BusinessResponseHandler extends SimpleChannelInboundHandler<NettyMe
         NettyMessageProto.NettyMessage register = NettyMessageUtils.buildRegister("gpsoo");
         ctx.writeAndFlush(register);
         log.warn("1 --- register gpsoo   SomeOneClient");
-
-//        NettyMessageProto.Header header = NettyMessageProto.Header.newBuilder()
-//                .putAttachment("protocol", "HTTP")
-//                .build();
-//        NettyMessageProto.NettyMessage request = NettyMessageProto.NettyMessage.newBuilder()
-//                .setHeader(header)
-//                .setBody(JsonUtils.toJson(ProtocolHttpBody.builder()
-//                        .to("gpsoo")
-//                        .method("GET")
-//                        .path("/")
-//                        .build()))
-//                .build();
-//        ctx.writeAndFlush(request);
-//        log.warn("2 --- send request GET / to gpsoo   SomeOneClient");
 
         super.channelActive(ctx);
     }
